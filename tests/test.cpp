@@ -15,6 +15,19 @@ TEST(ExecutorTest, InitialPositionAndHeading)
     ASSERT_EQ(heading, 'N');
 }
 
+// 测试自定义初始位置和方向
+TEST(ExecutorTest, CustomInitialPositionAndHeading)
+{
+    Executor executor(5, 10, 'E');
+    int x, y;
+    char heading;
+    executor.getPosition(x, y, heading);
+
+    ASSERT_EQ(x, 5);
+    ASSERT_EQ(y, 10);
+    ASSERT_EQ(heading, 'E');
+}
+
 // 测试单步向前移动
 TEST(ExecutorTest, MoveForwardNorth)
 {
