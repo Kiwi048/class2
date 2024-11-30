@@ -118,6 +118,81 @@ TEST(ExecutorTest, MultipleTurnsRight)
     ASSERT_EQ(heading, 'N');
 }
 
+// 测试加速模式下的前进
+TEST(ExecutorTest, AcceleratedMoveForward)
+{
+    Executor executor;
+    executor.executeCommands("FM");
+
+    int x, y;
+    char heading;
+    executor.getPosition(x, y, heading);
+
+    ASSERT_EQ(x, 0);
+    ASSERT_EQ(y, 2);
+    ASSERT_EQ(heading, 'N');
+}
+
+// 测试加速模式下左转
+TEST(ExecutorTest, AcceleratedTurnLeft)
+{
+    Executor executor;
+    executor.executeCommands("FL");
+
+    int x, y;
+    char heading;
+    executor.getPosition(x, y, heading);
+
+    ASSERT_EQ(x, 0);
+    ASSERT_EQ(y, 1);
+    ASSERT_EQ(heading, 'W');
+}
+
+// 测试加速模式下右转
+TEST(ExecutorTest, AcceleratedTurnRight)
+{
+    Executor executor;
+    executor.executeCommands("FR");
+
+    int x, y;
+    char heading;
+    executor.getPosition(x, y, heading);
+
+    ASSERT_EQ(x, 0);
+    ASSERT_EQ(y, 1);
+    ASSERT_EQ(heading, 'E');
+}
+
+// 测试加速模式切换
+TEST(ExecutorTest, ToggleAcceleration)
+{
+    Executor executor;
+    executor.executeCommands("FF");
+
+    int x, y;
+    char heading;
+    executor.getPosition(x, y, heading);
+
+    ASSERT_EQ(x, 0);
+    ASSERT_EQ(y, 0);
+    ASSERT_EQ(heading, 'N');  // 加速模式关闭后，位置未变，方向为初始方向
+}
+
+// 测试普通模式和加速模式混合
+TEST(ExecutorTest, MixedModeCommands)
+{
+    Executor executor;
+    executor.executeCommands("FMMLFMR");
+
+    int x, y;
+    char heading;
+    executor.getPosition(x, y, heading);
+
+    ASSERT_EQ(x, -1);
+    ASSERT_EQ(y, 5);
+    ASSERT_EQ(heading, 'N');
+}
+
 int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);

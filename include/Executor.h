@@ -94,7 +94,7 @@ class Executor
 {
 public:
     // 初始化接口，设置初始位置和朝向
-    Executor(int x = 0, int y = 0, char heading = 'N') : position_(x, y), heading_(heading)
+    Executor(int x = 0, int y = 0, char heading = 'N') : position_(x, y), heading_(heading), isAccelerated_(false)
     {
     }
 
@@ -120,19 +120,41 @@ public:
         int x, y;
         char heading;
         getPosition(x, y, heading);
-        std::cout << "Current Position: (" << x << ", " << y << ") Heading: " << heading << std::endl;
+        std::cout << "Current Position: (" << x << ", " << y << ") Heading: " << heading
+                  << (isAccelerated_ ? " [Accelerated]" : "") << std::endl;
     }
 
 private:
     Position position_;
     Heading heading_;
+    bool isAccelerated_;  // 加速状态标志
 
     // 执行单个控制指令
     void executeCommand(char command)
     {
+        if (command == 'F') {
+            toggleAcceleration();
+        } else {
+            if (isAccelerated_) {
+                executeAcceleratedCommand(command);
+            } else {
+                executeNormalCommand(command);
+            }
+        }
+    }
+
+    // 切换加速状态
+    void toggleAcceleration()
+    {
+        isAccelerated_ = !isAccelerated_;
+    }
+
+    // 执行普通状态下的指令
+    void executeNormalCommand(char command)
+    {
         switch (command) {
         case 'M':
-            moveForward();
+            moveForward(1);
             break;
         case 'L':
             heading_.turnLeft();
@@ -145,22 +167,44 @@ private:
         }
     }
 
-    // 前进一格
-    void moveForward()
+    // 执行加速状态下的指令
+    void executeAcceleratedCommand(char command)
     {
-        switch (heading_.getDirection()) {
-        case 'N':
-            position_.moveNorth();
+        switch (command) {
+        case 'M':
+            moveForward(2);
             break;
-        case 'S':
-            position_.moveSouth();
+        case 'L':
+            moveForward(1);
+            heading_.turnLeft();
             break;
-        case 'E':
-            position_.moveEast();
+        case 'R':
+            moveForward(1);
+            heading_.turnRight();
             break;
-        case 'W':
-            position_.moveWest();
+        default:
             break;
+        }
+    }
+
+    // 前进若干格
+    void moveForward(int steps)
+    {
+        for (int i = 0; i < steps; ++i) {
+            switch (heading_.getDirection()) {
+            case 'N':
+                position_.moveNorth();
+                break;
+            case 'S':
+                position_.moveSouth();
+                break;
+            case 'E':
+                position_.moveEast();
+                break;
+            case 'W':
+                position_.moveWest();
+                break;
+            }
         }
     }
 };
